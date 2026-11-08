@@ -6,21 +6,29 @@ The paper configuration set contains **35 pipelines, including the baseline**, e
 
 ## Repository contents
 
-Place this README at the repository root, alongside `Code/` and `Results/`. Keep the nine Python files together under their original names.
+The public repository currently contains this README, a license, and [`fraud-detection-pipeline-ordering.rar`](fraud-detection-pipeline-ordering.rar). Download the RAR file and extract it with a RAR-compatible archive utility. Cloning the repository or using GitHub's **Code > Download ZIP** does not extract the RAR automatically.
+
+The current RAR extracts to `creditcard_custom_batch_xgboost_full/` and contains historical ULB XGBoost outputs: individual runs, summaries, reports, plots, and logs. It does **not** contain the nine Python scripts or the complete `Code/` and `Results/` package described below.
+
+### Complete package required for execution
+
+The execution and paper-summary examples below require the complete experiment package. Its `Code/` and `Results/` folders still need to be added to the public repository or supplied in a complete downloadable archive. Extract that package first, then open the folder that directly contains both directories. In the instructions below, **project root** means that folder, which may be nested inside the extraction destination. Keep the nine Python files together under their original names.
+
+The paths in the following tables are local paths within the complete package, not links to files currently available individually on GitHub.
 
 | File | Purpose |
 | --- | --- |
-| [`Code/config.py`](Code/config.py) | Dataset paths, sampling targets, model settings, and decision threshold. |
-| [`Code/data_prep.py`](Code/data_prep.py) | Dataset loading, BAF encoding, stratified splitting, and feature scaling. |
-| [`Code/sampling_ops.py`](Code/sampling_ops.py) | SMOTE generation, Tomek Links, and ENN cleaning. |
-| [`Code/cluster_ops.py`](Code/cluster_ops.py) | K-means-based SMOTE operations. |
-| [`Code/gan_wrappers.py`](Code/gan_wrappers.py) | Guided GAN implementation and an optional CTGAN wrapper. |
-| [`Code/pipelines.py`](Code/pipelines.py) | The 35 pipeline definitions, row-origin labels, and cleaning counts. |
-| [`Code/classifiers.py`](Code/classifiers.py) | Classifier construction; the paper runner selects `xgb`, `rf`, or `nn`. |
-| [`Code/train_eval.py`](Code/train_eval.py) | Model fitting, prediction, evaluation metrics, and training history. |
-| [`Code/run.py`](Code/run.py) | Interactive and command-line execution, five repetitions, saved runs, and reports. |
+| `Code/config.py` | Dataset paths, sampling targets, model settings, and decision threshold. |
+| `Code/data_prep.py` | Dataset loading, BAF encoding, stratified splitting, and feature scaling. |
+| `Code/sampling_ops.py` | SMOTE generation, Tomek Links, and ENN cleaning. |
+| `Code/cluster_ops.py` | K-means-based SMOTE operations. |
+| `Code/gan_wrappers.py` | Guided GAN implementation and an optional CTGAN wrapper. |
+| `Code/pipelines.py` | The 35 pipeline definitions, row-origin labels, and cleaning counts. |
+| `Code/classifiers.py` | Classifier construction; the paper runner selects `xgb`, `rf`, or `nn`. |
+| `Code/train_eval.py` | Model fitting, prediction, evaluation metrics, and training history. |
+| `Code/run.py` | Interactive and command-line execution, five repetitions, saved runs, and reports. |
 
-The `Results/` directory contains the paper CSV tables and six ZIP archives. The original input datasets are downloaded separately.
+In the complete package, `Results/` contains the paper CSV tables and six ZIP archives listed under **Study result files**. These are separate from the single RAR currently published. The original input datasets are downloaded separately.
 
 ## Datasets
 
@@ -37,7 +45,7 @@ BAF loading handles the configured categorical columns, missing-value sentinels,
 
 Use a separate Python environment for local execution. The setup below targets Python **3.11-3.13** and uses TensorFlow 2.21 with Keras 3. It installs dependencies for a new run; the archived experiments do not include a complete software-version manifest.
 
-From the repository root on Linux or macOS:
+After obtaining and extracting the complete package, run these commands from its project root on Linux or macOS:
 
 ```bash
 python -m venv .venv
@@ -55,7 +63,7 @@ The runner does not install or uninstall packages. When changing packages in a n
 ## Run in Google Colab
 
 1. Open a notebook. A GPU runtime can accelerate GAN training.
-2. Upload all nine files from `Code/` directly to `/content/`, keeping their filenames. Upload the selected dataset there as well.
+2. Obtain and extract the complete experiment package first. Upload all nine Python files from its `Code/` folder directly to `/content/`, keeping their filenames. Upload the selected dataset there as well. The current public RAR contains run outputs and cannot supply these scripts.
 3. Install the dependencies in a separate cell:
 
 ```python
@@ -102,7 +110,7 @@ The guided GAN selects CUDA when PyTorch detects an available GPU, otherwise CPU
 
 ## Command-line examples
 
-Run these commands from the repository root, replacing the dataset paths with your local paths.
+Run these commands from the extracted project root, where `Code/run.py` exists, replacing the dataset paths with your local paths. These examples require the complete package described above.
 
 **Selected pipelines with Random Forest:**
 
@@ -134,7 +142,7 @@ Command-line pipeline names are separated by **spaces**. Use either `--batch` or
 
 ## Pipeline groups
 
-Names generally describe the sequence of operations from left to right. The `cluster_` prefix selects K-means-based SMOTE at the SMOTE stage. The human-readable labels are listed in [`Results/paper_pipelines.csv`](Results/paper_pipelines.csv).
+Names generally describe the sequence of operations from left to right. The `cluster_` prefix selects K-means-based SMOTE at the SMOTE stage. The human-readable labels are listed in `Results/paper_pipelines.csv`.
 
 ### 1. Basics: 6 pipelines
 
@@ -231,19 +239,21 @@ Each experiment folder contains:
 
 Successful saved runs are reused when the same output folder is selected. **Use a new output name whenever data, settings, or code change.** Resume checks identify saved pipeline/classifier runs but do not compare the full experiment configuration. The interactive menu can append a timestamp to create a separate folder.
 
-## Included results
+## Study result files
+
+The complete study package uses the following layout. These consolidated CSVs and six ZIP archives are not included in the currently published RAR.
 
 | File or folder | Contents |
 | --- | --- |
-| [`Results/CC Dataset/CC_per_seed_long.csv`](Results/CC%20Dataset/CC_per_seed_long.csv) | 525 ULB runs: 35 pipelines x 3 classifiers x 5 seeds. Dataset identifier: `CC`. |
-| [`Results/BAF Dataset/BAF_per_seed_long.csv`](Results/BAF%20Dataset/BAF_per_seed_long.csv) | 525 BAF runs with the same configuration coverage. Dataset identifier: `BAF`. |
-| [`Results/paper_pipelines.csv`](Results/paper_pipelines.csv) | Mapping between the 35 pipeline identifiers and paper labels. |
-| [`Results/cleaning_counts_per_seed.csv`](Results/cleaning_counts_per_seed.csv) | 1,050 records of removed legitimate and fraud rows, with source archive and record paths. |
-| [`Results/cleaning_counts.csv`](Results/cleaning_counts.csv) | Mean removal counts and sample standard deviations for the 35 paper configurations. |
-| [`Results/CC Dataset/`](Results/CC%20Dataset/) | Three ZIP archives for ULB: Random Forest (`RF`), FNN (`nn`), and XGBoost (`xgboost`). |
-| [`Results/BAF Dataset/`](Results/BAF%20Dataset/) | Three corresponding ZIP archives for BAF. |
+| `Results/CC Dataset/CC_per_seed_long.csv` | 525 ULB runs: 35 pipelines x 3 classifiers x 5 seeds. Dataset identifier: `CC`. |
+| `Results/BAF Dataset/BAF_per_seed_long.csv` | 525 BAF runs with the same configuration coverage. Dataset identifier: `BAF`. |
+| `Results/paper_pipelines.csv` | Mapping between the 35 pipeline identifiers and paper labels. |
+| `Results/cleaning_counts_per_seed.csv` | 1,050 records of removed legitimate and fraud rows, with source archive and record paths. |
+| `Results/cleaning_counts.csv` | Mean removal counts and sample standard deviations for the 35 paper configurations. |
+| `Results/CC Dataset/` | Three ZIP archives for ULB: Random Forest (`RF`), FNN (`nn`), and XGBoost (`xgboost`). |
+| `Results/BAF Dataset/` | Three corresponding ZIP archives for BAF. |
 
-Each historical ZIP contains 190 successful run JSON records: 38 configurations x 5 seeds for one dataset/classifier combination. These archives retain three additional configurations: `smote_plus_gan_5050`, `cluster_enn_gan`, and `cluster_gan_enn`. They are excluded from the 35-pipeline paper set and from the current runner. Across the six ZIPs there are 1,140 historical records; the two paper result CSVs select 1,050 of them.
+In the complete study package, each historical ZIP contains 190 successful run JSON records: 38 configurations x 5 seeds for one dataset/classifier combination. These archives retain three additional configurations: `smote_plus_gan_5050`, `cluster_enn_gan`, and `cluster_gan_enn`. They are excluded from the 35-pipeline paper set and from the current runner. Across the six ZIPs there are 1,140 historical records; the two paper result CSVs select 1,050 of them.
 
 Use the per-seed paper CSVs and `paper_pipelines.csv` when reconstructing paper tables. The historical ZIP reports can include the additional configurations.
 
@@ -259,14 +269,26 @@ New runs count removals at each cleaning step using the real/SMOTE/GAN row-origi
 
 ### Recalculate summaries without training
 
-Run the following Python code from the repository root. It reads the supplied CSVs and prints mean values and sample standard deviations; no dataset download or model training is needed.
+Once the study CSVs have been obtained and extracted into `Results/`, run the following Python code from the project root. It checks that the required files exist, then prints mean values and sample standard deviations. No original dataset download or model training is needed. The currently published RAR alone is insufficient for this two-dataset calculation.
 
 ```python
 from pathlib import Path
 import pandas as pd
 
-root = Path(".")
-paper = pd.read_csv(root / "Results/paper_pipelines.csv")
+root = Path(".")  # folder containing the extracted Results directory
+required = [
+    root / "Results/paper_pipelines.csv",
+    root / "Results/CC Dataset/CC_per_seed_long.csv",
+    root / "Results/BAF Dataset/BAF_per_seed_long.csv",
+]
+missing = [str(path) for path in required if not path.is_file()]
+if missing:
+    raise FileNotFoundError(
+        "Obtain and extract the complete study results, then run from the "
+        "folder containing Results/. Missing files: " + ", ".join(missing)
+    )
+
+paper = pd.read_csv(required[0])
 results = pd.concat([
     pd.read_csv(root / "Results/CC Dataset/CC_per_seed_long.csv"),
     pd.read_csv(root / "Results/BAF Dataset/BAF_per_seed_long.csv"),
