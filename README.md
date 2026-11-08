@@ -6,15 +6,20 @@ The paper configuration set contains **35 pipelines, including the baseline**, e
 
 ## Repository contents
 
-The public repository currently contains this README, a license, and [`fraud-detection-pipeline-ordering.rar`](fraud-detection-pipeline-ordering.rar). Download the RAR file and extract it with a RAR-compatible archive utility. Cloning the repository or using GitHub's **Code > Download ZIP** does not extract the RAR automatically.
+The repository contains this README, a license, and the complete code and results package in [`fraud-detection-pipeline-ordering.rar`](fraud-detection-pipeline-ordering.rar).
 
-The current RAR extracts to `creditcard_custom_batch_xgboost_full/` and contains historical ULB XGBoost outputs: individual runs, summaries, reports, plots, and logs. It does **not** contain the nine Python scripts or the complete `Code/` and `Results/` package described below.
+The RAR extracts to a `fraud-detection-pipeline-ordering/` folder containing:
 
-### Complete package required for execution
+- `Code/`: all nine Python scripts used by the maintained implementation.
+- `Results/`: five CSV files and six ZIP archives covering ULB and BAF results for XGBoost, Random Forest, and FNN.
 
-The execution and paper-summary examples below require the complete experiment package. Its `Code/` and `Results/` folders still need to be added to the public repository or supplied in a complete downloadable archive. Extract that package first, then open the folder that directly contains both directories. In the instructions below, **project root** means that folder, which may be nested inside the extraction destination. Keep the nine Python files together under their original names.
+### Extract the package
 
-The paths in the following tables are local paths within the complete package, not links to files currently available individually on GitHub.
+1. Download `fraud-detection-pipeline-ordering.rar` from the repository and extract it with a RAR-compatible archive utility. If you use GitHub's **Code > Download ZIP**, unzip that download first, then extract the RAR inside it.
+2. Open the extracted folder that directly contains `Code/` and `Results/`. This is the **project root** used in the commands below.
+3. Keep all nine Python files together under their original filenames. The original input datasets are downloaded separately using the links in **Datasets**.
+
+The paths in the following tables refer to files inside the extracted package.
 
 | File | Purpose |
 | --- | --- |
@@ -28,7 +33,7 @@ The paths in the following tables are local paths within the complete package, n
 | `Code/train_eval.py` | Model fitting, prediction, evaluation metrics, and training history. |
 | `Code/run.py` | Interactive and command-line execution, five repetitions, saved runs, and reports. |
 
-In the complete package, `Results/` contains the paper CSV tables and six ZIP archives listed under **Study result files**. These are separate from the single RAR currently published. The original input datasets are downloaded separately.
+The CSV files support recalculation of the paper summaries. The six ZIP archives contain the detailed historical outputs for each dataset and classifier; their contents are described under **Study result files**.
 
 ## Datasets
 
@@ -45,7 +50,7 @@ BAF loading handles the configured categorical columns, missing-value sentinels,
 
 Use a separate Python environment for local execution. The setup below targets Python **3.11-3.13** and uses TensorFlow 2.21 with Keras 3. It installs dependencies for a new run; the archived experiments do not include a complete software-version manifest.
 
-After obtaining and extracting the complete package, run these commands from its project root on Linux or macOS:
+After extracting the RAR, run these commands from the project root on Linux or macOS:
 
 ```bash
 python -m venv .venv
@@ -63,7 +68,7 @@ The runner does not install or uninstall packages. When changing packages in a n
 ## Run in Google Colab
 
 1. Open a notebook. A GPU runtime can accelerate GAN training.
-2. Obtain and extract the complete experiment package first. Upload all nine Python files from its `Code/` folder directly to `/content/`, keeping their filenames. Upload the selected dataset there as well. The current public RAR contains run outputs and cannot supply these scripts.
+2. Extract `fraud-detection-pipeline-ordering.rar`. Upload all nine Python files from its `Code/` folder directly to `/content/`, keeping their filenames. Upload the selected dataset there as well.
 3. Install the dependencies in a separate cell:
 
 ```python
@@ -110,7 +115,7 @@ The guided GAN selects CUDA when PyTorch detects an available GPU, otherwise CPU
 
 ## Command-line examples
 
-Run these commands from the extracted project root, where `Code/run.py` exists, replacing the dataset paths with your local paths. These examples require the complete package described above.
+Run these commands from the extracted project root, where `Code/run.py` exists, replacing the dataset paths with your local paths.
 
 **Selected pipelines with Random Forest:**
 
@@ -241,7 +246,7 @@ Successful saved runs are reused when the same output folder is selected. **Use 
 
 ## Study result files
 
-The complete study package uses the following layout. These consolidated CSVs and six ZIP archives are not included in the currently published RAR.
+The published RAR includes all five CSV files and all six ZIP archives listed below, under the extracted `Results/` folder.
 
 | File or folder | Contents |
 | --- | --- |
@@ -253,7 +258,7 @@ The complete study package uses the following layout. These consolidated CSVs an
 | `Results/CC Dataset/` | Three ZIP archives for ULB: Random Forest (`RF`), FNN (`nn`), and XGBoost (`xgboost`). |
 | `Results/BAF Dataset/` | Three corresponding ZIP archives for BAF. |
 
-In the complete study package, each historical ZIP contains 190 successful run JSON records: 38 configurations x 5 seeds for one dataset/classifier combination. These archives retain three additional configurations: `smote_plus_gan_5050`, `cluster_enn_gan`, and `cluster_gan_enn`. They are excluded from the 35-pipeline paper set and from the current runner. Across the six ZIPs there are 1,140 historical records; the two paper result CSVs select 1,050 of them.
+Each historical ZIP contains 190 successful run JSON records: 38 configurations x 5 seeds for one dataset/classifier combination. These archives retain three additional configurations: `smote_plus_gan_5050`, `cluster_enn_gan`, and `cluster_gan_enn`. They are excluded from the 35-pipeline paper set and from the current runner. Across the six ZIPs there are 1,140 historical records; the two paper result CSVs select 1,050 of them.
 
 Use the per-seed paper CSVs and `paper_pipelines.csv` when reconstructing paper tables. The historical ZIP reports can include the additional configurations.
 
@@ -269,7 +274,7 @@ New runs count removals at each cleaning step using the real/SMOTE/GAN row-origi
 
 ### Recalculate summaries without training
 
-Once the study CSVs have been obtained and extracted into `Results/`, run the following Python code from the project root. It checks that the required files exist, then prints mean values and sample standard deviations. No original dataset download or model training is needed. The currently published RAR alone is insufficient for this two-dataset calculation.
+After extracting the RAR, run the following Python code from the project root. It reads the included CSV files, checks their coverage, then prints mean values and sample standard deviations. No original dataset download or model training is needed. The six nested ZIP archives can remain compressed for this calculation.
 
 ```python
 from pathlib import Path
@@ -284,7 +289,7 @@ required = [
 missing = [str(path) for path in required if not path.is_file()]
 if missing:
     raise FileNotFoundError(
-        "Obtain and extract the complete study results, then run from the "
+        "Extract fraud-detection-pipeline-ordering.rar, then run from the "
         "folder containing Results/. Missing files: " + ", ".join(missing)
     )
 
