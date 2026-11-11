@@ -265,7 +265,7 @@ Use the per-seed paper CSVs and `paper_pipelines.csv` when reconstructing paper 
 ### Metric names and standard deviations
 
 - `Precision`, `Recall`, `F1`, and `MCC` are evaluated at the stored `used_threshold`, which is 0.35 in all 1,050 paper records.
-- `PR_AUC` in the CSVs corresponds to `AUC_PR` in the run JSON files and is computed with scikit-learn's **average precision** function. `ROC_AUC` corresponds to `AUC_ROC`.
+- `PR_AUC` in the CSVs corresponds to `AUC_PR` in the run JSON files and is calculated using scikit-learn’s `precision_recall_curve` followed by `auc(recall, precision)`, which applies the trapezoidal rule. `ROC_AUC` corresponds to `AUC_ROC`.
 - `TP`, `FP`, `TN`, and `FN` are confusion-matrix counts. Scores are stored on a 0-1 scale, except MCC, which can range from -1 to 1.
 - The maintained runner reports **sample standard deviation (`ddof=1`)**. Older summaries inside the ZIPs use population standard deviation (`ddof=0`). Recalculate from the per-seed values when producing a consistent mean-and-SD table.
 - The saved threshold sweeps are additional analyses. They do not change the 0.35 threshold used for the main reported metrics.
