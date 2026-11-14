@@ -1,6 +1,6 @@
 # Fraud Detection Pipeline Ordering
 
-Research code and archived results for studying how the sequence of data augmentation and cleaning affects fraud detection under class imbalance. The framework combines SMOTE, a guided generative adversarial network (GAN), Tomek Links, Edited Nearest Neighbours (ENN), and K-means-based SMOTE.
+Research code and archived results for studying how the sequence of data augmentation and cleaning affects fraud detection under class imbalance. The framework combines SMOTE, a guided generative adversarial network (GAN), Tomek Links, Edited Nearest Neighbors (ENN), and K-means-based SMOTE.
 
 The paper configuration set contains **35 pipelines, including the baseline**, evaluated with **XGBoost, Random Forest, and a feed-forward neural network (FNN)** on the **ULB Credit Card Fraud** and **Bank Account Fraud (BAF)** datasets. Five repetitions per combination give **1,050 paper runs**.
 
@@ -44,11 +44,13 @@ The CSV files support recalculation of the paper summaries. The six ZIP archives
 
 Use the original ULB dataset and the **Base** variant of BAF. For Colab, the default locations are `/content/creditcard.csv` and `/content/Base.csv`. A different location can be supplied with `--data-path`.
 
-BAF loading handles the configured categorical columns, missing-value sentinels, and feature exclusions in `data_prep.py`. Feature scaling is fitted on the training partition. Sampling and cleaning operate on the training data; validation and test data retain their original class distributions.
+BAF loading handles the configured categorical columns, missing-value sentinels, and feature exclusions in `data_prep.py`. Categorical levels are determined from the full Base file, and numerical imputation medians are calculated from the selected subsample before the train/validation/test split. These steps use information from held-out feature distributions; their effect on performance estimates was not quantified. Feature scaling is fitted on the training partition. Sampling and cleaning operate on the training data; validation and test data retain their original class distributions.
+
+The BAF results provide a secondary, descriptive comparison. Some configurations used different selected subsamples, and the decision threshold of 0.35 was transferred unchanged from ULB.
 
 ## Installation
 
-Use a separate Python environment for local execution. The setup below targets Python **3.11-3.13** and uses TensorFlow 2.21 with Keras 3. It installs dependencies for a new run; the archived experiments do not include a complete software-version manifest.
+Use a separate Python environment for local execution. The setup below targets Python **3.11-3.13** and uses TensorFlow 2.21 with Keras 3 for new runs. The archived experiments were conducted in Google Colab and do not include a complete software-version manifest. The installation targets below should therefore not be treated as recorded versions of the historical environment. Use the import check and baseline example below to check the setup in your runtime before starting a larger batch.
 
 After extracting the RAR, run these commands from the project root on Linux or macOS:
 
@@ -75,7 +77,7 @@ The runner does not install or uninstall packages. When changing packages in a n
 %pip install numpy pandas scipy scikit-learn imbalanced-learn xgboost matplotlib "tensorflow==2.21.0" "keras>=3" torch
 ```
 
-4. Restart the session if packages changed, then check imports and pipeline registration:
+4. Restart the session if packages changed, then check imports, seed setup, and pipeline registration:
 
 ```python
 %cd /content
@@ -84,15 +86,14 @@ import keras
 import torch
 from pipelines import get_all_pipelines
 
-for seed in (42, 456, 42):
-    tf.keras.utils.set_random_seed(seed)
+tf.keras.utils.set_random_seed(42)
 
 assert len(get_all_pipelines()) == 35
 print("TensorFlow:", tf.__version__)
 print("Keras:", keras.__version__)
 print("PyTorch:", torch.__version__)
 print("PyTorch CUDA available:", torch.cuda.is_available())
-print("Imports, repeated seed calls, and pipeline registration passed.")
+print("Imports, seed setup, and pipeline registration passed.")
 ```
 
 5. Start with one pipeline and one classifier:
@@ -209,9 +210,9 @@ Most settings are defined in `Code/config.py`. Repetition count and the seed seq
 | Data partitions | Stratified 70% training, 10% validation, 20% test. |
 | Overall augmentation target | 10% fraud in the augmented training set; the baseline keeps the original data. Cleaning after augmentation can change the final proportion. |
 | Sequential intermediate targets | SMOTE first targets 4% in `smote_gan`; GAN first targets 6% in `gan_smote`. The second stage targets 10%. |
-| SMOTE neighbours | `CFG.smote_k = 5`; reduced when necessary for small minority groups. |
-| K-means clusters | `CFG.kmeans_k = 5`, a separate parameter from SMOTE neighbours. |
-| Cleaning | Tomek Links and ENN target the majority class. ENN uses 3 neighbours with `kind_sel="all"`. |
+| SMOTE neighbors | `CFG.smote_k = 5`; reduced when necessary for small minority groups. |
+| K-means clusters | `CFG.kmeans_k = 5`, a separate parameter from SMOTE neighbors. |
+| Cleaning | Tomek Links and ENN target the majority class. ENN uses 3 neighbors with `kind_sel="all"`. |
 | GAN | Guided PyTorch GAN; 100 epochs, batch size 256, learning rate 0.0002, noise dimension 64, hidden width 128. |
 | XGBoost | 400 trees, maximum depth 6, learning rate 0.05, row and column subsampling 0.9. |
 | Random Forest | 300 trees and `class_weight="balanced_subsample"`. |
@@ -312,3 +313,9 @@ print(summary.round(4).to_string())  # pandas std uses ddof=1
 ```
 
 For new experiments, retain the installed package versions, hardware information, settings, and code commit alongside the outputs. The archived per-run values provide the reference for the supplied paper summaries; new training runs can vary with software versions and hardware.
+
+## Citation
+
+**Associated manuscript:** Basant Nabil, Ehab Ezzat Hassanein, and Noha Nagy Mohy. *A Pipeline Ordering Framework for Hybrid Data Augmentation and Cleaning in Fraud Detection Under Extreme Class Imbalance.* Manuscript prepared for submission to *Applied System Innovation*.
+
+When referring to this implementation or the archived results, include the repository URL and the commit or release used: <https://github.com/basantnabil-hub/fraud-detection-pipeline-ordering>.
